@@ -15,7 +15,7 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!--<filter>
+    <filter>
         <filter-name>JDBCFilter</filter-name>
         <filter-class>git.kwartem.blog.JDBCFilter</filter-class>
     </filter>
@@ -23,7 +23,7 @@
     <filter-mapping>
         <filter-name>JDBCFilter</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>-->
+    </filter-mapping>
 
     <servlet>
         <servlet-name>MainServlet</servlet-name>
@@ -53,7 +53,7 @@
 
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/login</url-pattern>
+        <url-pattern>/login/*</url-pattern>
     </servlet-mapping>
 
     <servlet>

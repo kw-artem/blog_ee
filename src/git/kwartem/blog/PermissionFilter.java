@@ -16,18 +16,27 @@ public class PermissionFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String requestURI = request.getRequestURI();
-        System.out.println(requestURI + " " + request.getMethod());
 
-        if(!requestURI.contains("/welcome") && !requestURI.contains("/login") && !requestURI.contains("/sign")){
+        boolean isBlocked = (!requestURI.contains("/welcome") && !requestURI.contains("/login") && !requestURI.contains("/sign") &&
+                             !requestURI.contains("/favicon.ico"));
+        System.out.println(requestURI + " " + request.getMethod() + " " + isBlocked);
+        System.out.println("user==null: " + (request.getSession().getAttribute("user") == null));
+        System.out.println("user-value: " + (request.getSession().getAttribute("user")));
+        System.out.println("getContextPath: '" + request.getContextPath() + "'");
+
+        /*if(isBlocked){
+
+            //System.out.println("user-class: " + (request.getSession().getAttribute("user")).getClass());
             if(request.getSession().getAttribute("user") == null){
                 try {
                     Message.send("You don't have permissions enough. You need to log in.");
                     response.sendRedirect(request.getContextPath() + "/login");  // to /login
                 } catch (IOException e) {
+                    Message.send("Error.");
                     e.printStackTrace();
                 }
             }
-        }
+        }*/
 
         chain.doFilter(servletRequest, servletResponse);
     }

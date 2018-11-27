@@ -1,39 +1,36 @@
 package git.kwartem.blog;
 
+import com.mysql.cj.Session;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
-
-import static git.kwartem.blog.Constants.DB_CONN_PASSWORD;
-import static git.kwartem.blog.Constants.DB_CONN_URL_PATH;
-import static git.kwartem.blog.Constants.DB_CONN_USER;
+import java.sql.SQLException;
 
 public class LoginServlet extends HttpServlet {
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-
-        //to do:
-        //to move plugging jdbc_driver and establishing connection into JDBCFilter
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            System.out.println("Failed 0");
-        }
+        Connection connection = null;
 
         String raw_login = request.getParameter("login");
         String user_pass = request.getParameter("password");
 
-        try(Connection connection = DriverManager.
-                getConnection(DB_CONN_URL_PATH, DB_CONN_USER, DB_CONN_PASSWORD)) {
+        connection = ConnectionUtils.getStoredConnection((ServletRequest)request);
 
-            UserWrapper userWrapper = new UserWrapper(connection);
-            User raw_user = new User(raw_login, user_pass);
-            boolean result = userWrapper.toLoginUser(raw_user);
+        UserWrapper userWrapper = new UserWrapper(connection);
+        User raw_user = new User(raw_login, user_pass);
+
+        boolean result = false;
+        try {
+            result = userWrapper.toLoginUser(raw_user);
 
             if(result){
                 Message.send("You have logged in!");
@@ -45,21 +42,29 @@ public class LoginServlet extends HttpServlet {
                 Message.send("Login or password is not correct.");
                 response.sendRedirect(request.getContextPath() + "/login");
             }
-
-        } catch (Exception e) {
-            System.out.println("An error occurred to work with connection");
-            System.out.println("-E----------------------------------------------");
-            System.out.println(e.fillInStackTrace());
-            System.out.println(e.getLocalizedMessage());
-            System.out.println(e.getMessage());
-            System.out.println("------------------------------------------------");
+        } catch (SQLException e) {
+            Message.send("An error occurred while processing the request");
+            e.printStackTrace();
         }
-
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/login.jsp");
-        dispatcher.forward(request, response);
+        if(request.getRequestURI().equals("/login/logout")){
+            System.out.println("---- logout");
+            doDelete(request, response);
+        } else {
+            RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/login.jsp");
+            dispatcher.forward(request, response);
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        session.invalidate();
+        response.sendRedirect(request.getContextPath() + "/login");
     }
 }

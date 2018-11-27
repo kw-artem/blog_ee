@@ -7,6 +7,7 @@
     <title>Main</title>
 </head>
 <body>
+    <a href="/login/logout">Logout</a>
     <a href="/new-post">Create post</a>
     <h1>All Posts:</h1>
     <ul>
