@@ -3,7 +3,7 @@ package git.kwartem.blog;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class User {
+public class User{
 
     private String login;
     private String email;

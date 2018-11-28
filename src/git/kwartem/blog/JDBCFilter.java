@@ -37,29 +37,35 @@ public class JDBCFilter implements Filter {
 
         //to do:
         //create a handler which will to resolve incoming request path
-        if(!servletPath.contains("/welcome")){
+        if(!servletPath.equals("/welcome")){
             Connection connection = null;
             try {
                 connection = ConnectionUtils.getConnection();
+                System.out.println(1);
                 connection.setAutoCommit(false);
+                System.out.println(2);
 
                 ConnectionUtils.storeConnetion(request, connection);
+                System.out.println(3);
                 chain.doFilter(request, response);
+                System.out.println(4);
 
                 connection.commit();
+                System.out.println(5);
 
             } catch (Exception e) {
                 ConnectionUtils.rollback(connection);
                 System.out.println("An error occurred to work with connection");
                 System.out.println("-E---------------------------------------");
+                System.out.println("---messg:");
                 System.out.println(e.getMessage());
+                System.out.println("---stack:");
                 e.printStackTrace();
             } finally {
                 ConnectionUtils.close(connection);
             }
         }
-
-
+        System.out.println("...exiting from jdbc filter");
     }
 
 }

@@ -1,6 +1,7 @@
 package git.kwartem.blog;
 
 import java.sql.*;
+import java.util.HashMap;
 
 public class UserWrapper {
 
@@ -51,5 +52,21 @@ public class UserWrapper {
 
     public void getUserData(User user){
 
+    }
+
+    //to do:
+    //rewrite, create a global collection like HashMap/Set all of blog users
+    public HashMap<Integer,String> getAllUserLogins() throws SQLException {
+
+        HashMap<Integer,String> user_logins = new HashMap<Integer,String>();
+
+        PreparedStatement pstatement = connection.prepareStatement("select user_id, login from users");
+        ResultSet resultSet = pstatement.executeQuery();
+
+        while(resultSet.next()){
+            user_logins.put(resultSet.getInt(1), resultSet.getString(2));
+        }
+
+        return user_logins;
     }
 }
